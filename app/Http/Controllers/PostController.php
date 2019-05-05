@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
+
     private $post;
 
     public function __construct(Post $post)
@@ -16,9 +17,9 @@ class PostController extends Controller
         $this->post = $post;
 
         $this->middleware('auth')
-                    ->except([
-                        'index', 'show'
-                    ]);
+                ->except([
+                    'index', 'show'
+        ]);
     }
 
     /**
@@ -53,28 +54,41 @@ class PostController extends Controller
     {
         $data = $request->all();
 
+//        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+//            $name = kebab_case($request->title);
+//            $extension = $request->image->extension();
+//            $nameImage = "{$name}.$extension";
+//            $data['image'] = $nameImage;
+//
+//            dd($data['image']);
+//
+//          $upload = $request->image->storeAs('public/imgs/posts', $nameImage);
+//
+//            if (!$upload)
+//                return redirect()
+//                                ->back()
+//                                ->with('errors', ['Falha no Upload'])
+//                                ->withInput();
+//        }
+
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
-            $name = kebab_case($request->title);
-            $extension = $request->image->extension();
-            $nameImage = "{$name}.$extension";
-            $data['image'] = $nameImage;
-
-            $upload = $request->image->storeAs('posts', $nameImage);
-
-            if (!$upload)
-                return redirect()
-                            ->back()
-                            ->with('errors', ['Falha no Upload'])
-                            ->withInput();
+            $fileNameWintExt = $request->file('image')->getClientOriginalName();
+            $filename = pathinfo($fileNameWintExt, PATHINFO_FILENAME);
+            $extension = $request->file('image')->getClientOriginalExtension();
+            $data['image'] = $filename . '_' . time() . '.' . $extension;
+            $path = $request->image->storeAs('posts', $data['image']);
+        } else {
+            $data['image'] = 'noimage.jpg';
         }
 
+
         $post = $request->user()
-                            ->posts()
-                            ->create($data);
+                ->posts()
+                ->create($data);
 
         return redirect()
-                    ->route('posts.index')
-                    ->withSuccess('Cadastro realizado com sucesso!');
+                        ->route('posts.index')
+                        ->withSuccess('Cadastro realizado com sucesso!');
     }
 
     /**
@@ -125,7 +139,7 @@ class PostController extends Controller
                 if (Storage::exists("posts/{$post->image}"))
                     Storage::delete("posts/{$post->image}");
             }
-            
+
             $name = kebab_case($request->title);
             $extension = $request->image->extension();
             $nameImage = "{$name}.$extension";
@@ -135,16 +149,16 @@ class PostController extends Controller
 
             if (!$upload)
                 return redirect()
-                            ->back()
-                            ->with('errors', ['Falha no Upload'])
-                            ->withInput();
+                                ->back()
+                                ->with('errors', ['Falha no Upload'])
+                                ->withInput();
         }
 
         $post->update($data);
 
         return redirect()
-                    ->route('posts.index')
-                    ->withSuccess('Post atualizado com sucesso!');
+                        ->route('posts.index')
+                        ->withSuccess('Post atualizado com sucesso!');
     }
 
     /**
@@ -161,7 +175,8 @@ class PostController extends Controller
         $post->delete();
 
         return redirect()
-                    ->route('posts.index')
-                    ->withSuccess('Post deletado com sucesso!');
+                        ->route('posts.index')
+                        ->withSuccess('Post deletado com sucesso!');
     }
+
 }

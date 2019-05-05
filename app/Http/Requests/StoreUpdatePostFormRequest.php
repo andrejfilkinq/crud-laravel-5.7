@@ -29,6 +29,7 @@ class StoreUpdatePostFormRequest extends FormRequest
             'title' => "required|min:3|max:100|unique:posts,title,{$id},id",
             'body'  => 'required|min:3|max:40000',
             'image' => 'image',
+                    // image|nullable|max:1999
         ];
     }
 }

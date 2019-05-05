@@ -5,7 +5,7 @@
 @section('content')
 
 <h1>
-    Posts
+    Posts 
     <a href="{{ route('posts.create') }}" class="btn btn-primary">
         <i class="fas fa-plus-square"></i>
     </a>
@@ -15,15 +15,19 @@
 
 <ul class="media-list">
     @forelse($posts as $post)
+
     <li class="media">
         <div class="pull-left">
-            @php
-                $pathImage = url('imgs/posts/default.png');
+            <!--<img src="/storage/posts/{{ $post->image }}" alt="{{ $post->title }}" class="img-circle" style="max-width: 60px; margin: 10px;">-->
 
-                if ($post->image)
-                    $pathImage = url("storage/posts/{$post->image}");
-            @endphp
-            <img src="{{ $pathImage }}" alt="{{ $post->title }}" class="img-circle" style="max-width: 60px; margin: 10px;">
+            @if($post->image != 'noimage.jpg')
+
+            <img src="/storage/posts/{{ $post->image }}" alt="{{ $post->title }}" class="img-circle" style="max-width: 60px; margin: 10px;">
+            @else
+            <img src="/storage/posts/default.png" alt="{{ $post->title }}" class="img-circle" style="max-width: 60px; margin: 10px;">
+            @endif
+
+
         </div>
         <div class="media-body">
             <span class="text-muted pull-right">
@@ -48,4 +52,7 @@
     {!! $posts->links() !!}
 </ul>
 
+
+<!--<img src="{{ asset('imgs/posts/default.png') }}" />-->
+<!--<img src="{{ asset('imgs/posts/default.png') }}" class="img-circle" style="max-width: 60px; margin: 10px;">-->
 @endsection
